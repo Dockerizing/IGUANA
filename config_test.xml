@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<iguana
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<data-description>
+		<namespace name="http://localhost/" />
+		<anchor name="#" />
+		<resource-uri name="http://localhost/resource/" />
+		<property-prefix-name name="bgprop" />
+		<resource-prefix-name name="bgres" />
+	</data-description>
+	<databases main="dbpedia">
+		<database id="dbpedia" type="impl">
+			<endpoint uri="dbpedia.org/sparql" />
+		</database>
+		<database id="ref" type="impl">
+			<endpoint uri="dbpedia.org/sparql" />
+		</database>
+	</databases>
+	<benchmark log="Benchmark">
+		<drop-db value="false" />
+		<query-diversity value="2000" />
+		<graph-uri name="http://dbpedia.org"/>
+		<random-function type="RandomTriple" generate="false">
+			<percent value="1.0" file-name="dbpedia2/"/>
+		</random-function>
+		<test-db type="choose" reference="ref">
+			<db id="dbpedia" />
+		</test-db>
+		<testcases>
+		   <testcase class="de.uni_leipzig.iguana.testcases.StressTestcase2">
+                <property name="sparql-user" value="2"/>
+                <property name="update-user" value="0"/>
+                <property name="latency-amount0" value="20"/>
+				<property name="latency-strategy0" value="FIXED"/>
+                <property name="queries-path" value="queries.txt"/>
+                <property name="timelimit" value="10000"/>
+           </testcase>
+		</testcases>
+	</benchmark>
+</iguana>
