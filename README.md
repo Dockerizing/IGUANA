@@ -2,6 +2,8 @@
 
 Docker container for [IGUANA](https://github.com/AKSW/IGUANA), which is both a program and an API framework for benchmarking SPARQL Endpoints.
 
+Please contact the IGUANA guys, if you have troubles with IGUANA itself, because we only provide the Docker container.
+
 ### Build
 
 To build the container execute:
