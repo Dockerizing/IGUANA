@@ -14,13 +14,14 @@ To pull, just use:
 
 ### Deploy
 
-Execute this on your terminal to deploy the container:
+To deploy the container and save the results of a basic benchmark asking Dbpedia use:
 
-`docker run -v /tmp/iguana-results:/iguana/results -ti aksw/dld-present-iguana:latest`
+`docker run -v $PWD/iguana-results:/iguana/results aksw/dld-present-iguana:latest`
 
-Using `-v` enables the usages of folders in the host. We use that here, to tell Docker to save IGUANAs results in a
-certain folder. Replace `/tmp/iguana-results` with a different path, if necessary.
+You can change `$PWD/iguana-results` if necessary.
 
-## Usage
+To use your own configuration and query file, please adopt the example files [config.xml](https://github.com/Dockerizing/IGUANA/blob/master/config.xml) and [queries.txt](https://github.com/Dockerizing/IGUANA/blob/master/queries.txt), create a local copy and mount these to the container:
 
-To use it, just run it as stated above. You will be logged into it. Navigate to `/iguana/` and execute `./start.sh` to start a basic benchmark asking Dbpedia. If you want to adapt the configuration or query list, please have a look into `/iguana/config_test.xml` and `/iguana/queries.txt`.
+```
+docker run -v $PWD/iguana-results:/iguana/results -v $PWD/my_config.xml:/iguana/config.xml -v $PWD/my_queries.txt:/iguana/queries.txt aksw/dld-present-iguana:latest
+```
