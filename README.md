@@ -26,7 +26,11 @@ You can add your own stores to test as `-e`-parameter or in a configuration file
 
 Stores can added as Docker environment variables from your command line with parameter `-e`. Each store must be a new `-e` and prefixed as STORE_X, while X is an incremented number, starting with 1. Example:
 
-`docker run -e "STORE_1=uri=>http://dbpedia.org/sparql" -e "STORE_2=uri=>http://example.com/sparql" aksw/dld-present-iguana`
+```
+docker run -e "STORE_1=uri=>http://dbpedia.org/sparql" \
+    -e "STORE_2=uri=>http://example.com/sparql" \
+    aksw/dld-present-iguana
+```
 
 Beside the uri you can give a user and password. Example:
 
@@ -64,7 +68,9 @@ This database-ID must be referenced at section `suite->test-db` as: `<db id="my_
 To pass your own configuration and/or query file, they must mounted to the Docker container as:
 
 ```
-docker run -v $PWD/my_config.xml:/iguana/config.xml -v $PWD/my_queries.txt:/iguana/queries.txt aksw/dld-present-iguana:latest
+docker run -v $PWD/my_config.xml:/iguana/config.xml \
+    -v $PWD/my_queries.txt:/iguana/queries.txt \
+    aksw/dld-present-iguana:latest
 ```
 
 change the local paths `$PWD/my_config.xml` and `$PWD/my_queries.txt` to your requirements.
