@@ -1,40 +1,58 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<iguana
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-	<data-description>
-		<namespace name="http://localhost/" />
-		<anchor name="#" />
-		<resource-uri name="http://localhost/resource/" />
-		<property-prefix-name name="bgprop" />
-		<resource-prefix-name name="bgres" />
-	</data-description>
+<iguana xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<databases main="dbpedia">
-		<database id="dbpedia" type="impl">
-			<endpoint uri="dbpedia.org/sparql" />
+		
+		<!-- manually added databases should look like:
+		<database id="virtuoso" type="impl">
+			# required. Its not possible to use 'localhost' here!
+			<endpoint uri="http://uri-to/sparql" />
+			# optionaly 
+			<user value="username" />
+			# optionaly
+			<pwd value="password" />
 		</database>
+		 -->
+
+		<!-- Do not remove the next comment-tag, its required for auto-replacing -->
+		<!-- %STORES% -->
+
 		<database id="ref" type="impl">
-			<endpoint uri="dbpedia.org/sparql" />
+			<endpoint uri="http://dbpedia.org/sparql" />
 		</database>
 	</databases>
-	<benchmark log="Benchmark">
+
+	<suite>
 		<drop-db value="false" />
 		<query-diversity value="2000" />
-		<graph-uri name="http://dbpedia.org"/>
+		<graph-uri name="http://dbpedia.org" />
 		<random-function type="RandomTriple" generate="false">
-			<percent value="1.0" file-name="dbpedia2/"/>
+			<percent value="1.0" file-name="dbpedia2/" />
 		</random-function>
+		
+		<warmup time="0" file-name="warmup.txt" />
+	
 		<test-db type="choose" reference="ref">
-			<db id="dbpedia" />
+			<!-- manually added entries should look like:
+			<db id="virtuoso" />
+			-->			
+
+			<!-- Do not remove the next comment-tag, its required for auto-replacing -->
+			<!-- %CHOOSE% -->
 		</test-db>
+
 		<testcases>
-		   <testcase class="de.uni_leipzig.iguana.testcases.StressTestcase2">
-                <property name="sparql-user" value="2"/>
+		   <testcase class="org.aksw.iguana.testcases.StressTestcase">
+                <property name="sparql-user" value="1"/>
                 <property name="update-user" value="0"/>
                 <property name="latency-amount0" value="20"/>
-				<property name="latency-strategy0" value="FIXED"/>
+				<property name="latency-strategy0" value="VARIABLE"/>
                 <property name="queries-path" value="queries.txt"/>
+                <property name="is-pattern" value="false" />
                 <property name="timelimit" value="10000"/>
-           </testcase>
+           </testcase>		
 		</testcases>
-	</benchmark>
+	</suite>
+
+
 </iguana>
+
