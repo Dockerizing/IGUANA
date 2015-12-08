@@ -73,7 +73,6 @@ main() {
 	
 	# copy results_* to ./results (iguana saves results in results_0, results_1, ... etc, if there ara more than one <suite> in config.xml!)
 	cp -r ./results_* ./results/
-
 } # end of main
 
 # may overwrite config/queries file with mounted config files
@@ -120,16 +119,22 @@ test_connection () {
     echo ""
 }
 
-# echo uri 
+# get uri from linked docker container
 uri_store_matching() {
     uri=$1
+    # may get uri from %store_id%
     if [[ "$uri" =~ %[A-Za-z]+% ]] ; then
-         # may get uri from linked docker container
-        match=$BASH_REMATCH
-        append=${uri//$match/} # may appended port/path
-        store_id=${match//\%/} # replace %% from beginning and end
-        store_id="${store_id^^}_PORT_22_TCP_ADDR" # uppercase store_tcp_22 ip-address
-        uri=${!store_id}${append}
+        match=$BASH_REMATCH # = %store_id%
+        appendix=${uri//*$match/}
+        prefix=${uri//$match*/}
+        store_id=${match//\%/}
+        
+        store_tcp_var="${store_id^^}_PORT" # address variable with uppercased store_id
+        store_tcp=${!store_tcp_var} #  store tcp address
+        store_tcp=${store_tcp//*\//} # remove tcp://
+        store_tcp=${store_tcp//:*/} # remove port
+
+        uri=${prefix}${store_tcp}${appendix}
     fi
     echo $uri
 }
@@ -174,7 +179,7 @@ get_stores() {
 	while [ -n "${!stores}" ]
 	do
 	    store=${!stores}
-	    echo "[INFO] read store $i config: '${store}'"
+	    # echo "[INFO] store $i config: '${store}'"
 
 	    URI=""
 	    TYPE=""
@@ -183,6 +188,7 @@ get_stores() {
 
 	    get_store_config "$store"
 
+	    echo "[INFO] got store $i (${URI})"
 	    #echo "type: $TYPE , uri: $URI , user: $USER , pwd: $PWD"
 	    if [ -z "$URI" ] ; then
 	        echo "[ERROR] uri of store $i not given"
@@ -192,7 +198,7 @@ get_stores() {
 	    echo "[INFO] waiting for store to come online"
 	    test_connection "${CONNECTION_ATTEMPTS}" "${URI}"
 	    if [ $? -eq 2 ]; then
-	        echo "[ERROR] store $STORE_ADDR_TEST not reachable. Skip benchmark and continue..."
+	        echo "[ERROR] store $STORE_ADDR_TEST not reachable. Skip this benchmark and continue with next store..."
 	        let "i=$i+1"
     		stores="STORE_${i}"
 	        continue
