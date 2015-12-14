@@ -74,7 +74,9 @@ main() {
 	java -cp "${LIBDIR}*" org.aksw.iguana.benchmark.Main $CONFIG
 	
 	# copy results_* to ./results (iguana saves results in results_0, results_1, ... etc, if there ara more than one <suite> in config.xml!)
-	cp -r ./results_* ./results/	
+	cp -r ./results_* ./results/
+
+	echo "[INFO] Done. The benchmark results are saved to ./[data/]results/"
 
 } # end of main
 
