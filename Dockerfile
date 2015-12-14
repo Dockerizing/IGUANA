@@ -19,8 +19,8 @@ ENV DEBIAN_FRONTEND noninteractive
 # update package index
 RUN apt-get clean && apt-get update
 
-# install some java and curl (for connection-test)
-RUN apt-get install -y openjdk-7-jre curl
+# install some java
+RUN apt-get install -y openjdk-7-jre
 
 # create /iguana
 RUN mkdir /iguana

@@ -21,8 +21,9 @@ LIBDIR=$1
 CONFIG=$2
 QUERIES=$3
 CONF_DIR="./config/"
-LOADER_ADDR="${LOADER_PORT_8891_TCP_ADDR}" # load address, from compose loader container
-: ${CONNECTION_ATTEMPTS:=10}
+LOADER_ADDR="${LOADER_PORT_80_TCP_ADDR}" # loader address, from compose loader container
+LOADER_PORT=80
+: ${CONNECTION_ATTEMPTS:=30}
 
 # main function
 main() {
@@ -55,14 +56,15 @@ main() {
 	fi
 	sed -i "s/<property name=\"queries-path\" value=\"queries.txt\"\/>/<property name=\"queries-path\" value=\"${queries_sed_esc}\"\/>/g" $TMP_CONFIG
 	cp ./tmp-config.xml $CONFIG
+	rm ./tmp-config.xml
 
 	# if we have a loader address, wait that its finished impport
 	if [[ ! -z $LOADER_ADDR ]]; then
 		echo "[INFO] loader address given - waiting for loader to be finished"
-		test_connection "${CONNECTION_ATTEMPTS}" "${LOADER_ADDR}"
+		test_connection "${CONNECTION_ATTEMPTS}" "${LOADER_ADDR}" "${LOADER_PORT}"
 		if [ $? -eq 2 ]; then
-		    echo "[ERROR] loader seems to be not finishing"
-		    exit 1
+		    echo "[ERROR] loader (${LOADER_ADDR}:${LOADER_PORT}) seems to be not finishing"
+		    exit 1		    
 		else
 			echo "[INFO] loader connection OK"
 		fi
@@ -72,7 +74,8 @@ main() {
 	java -cp "${LIBDIR}*" org.aksw.iguana.benchmark.Main $CONFIG
 	
 	# copy results_* to ./results (iguana saves results in results_0, results_1, ... etc, if there ara more than one <suite> in config.xml!)
-	cp -r ./results_* ./results/
+	cp -r ./results_* ./results/	
+
 } # end of main
 
 # may overwrite config/queries file with mounted config files
@@ -101,8 +104,14 @@ test_connection () {
 
     t=$1
     host=$2
+    port=$3
+
+    if [[ -z $port ]]; then
+    	echo "[WARNING] no port given for connection-test, set 80 as default."
+        port=80
+    fi
     
-    curl --output /dev/null --silent --head --fail "$host"
+    nc -w 1 "$host" $port < /dev/null;
     while [[ $? -ne 0 ]] ;
     do
         echo -n "..."
@@ -114,7 +123,7 @@ test_connection () {
             echo "...timeout"
             return 2
         fi
-        curl --output /dev/null --silent --head --fail "$host"
+        nc -w 1 "$host" $port < /dev/null;
     done
     echo ""
 }
@@ -156,8 +165,15 @@ get_store_config () {
 
         # echo "${key} = ${val}"
         case "$key" in
-            "uri" ) 
-                URI=$(uri_store_matching $val)
+            "uri" )
+				URI=$(uri_store_matching $val)
+                
+                HOST=${URI//*:\/\//} # remove http://
+				HOST=${HOST//:*/} # remove port/path
+				HOST=${HOST//\/*/}
+
+				PORT=${URI//*:/}
+				PORT=${PORT//\/*/}
                 ;;
             "type" )
                 TYPE=$val
@@ -182,6 +198,8 @@ get_stores() {
 	    # echo "[INFO] store $i config: '${store}'"
 
 	    URI=""
+	    HOST=""
+	    PORT=""
 	    TYPE=""
 	    USER=""
 	    PWD=""
@@ -189,21 +207,19 @@ get_stores() {
 	    get_store_config "$store"
 
 	    echo "[INFO] got store $i (${URI})"
-	    #echo "type: $TYPE , uri: $URI , user: $USER , pwd: $PWD"
+	    # echo "type: $TYPE , uri: $URI , user: $USER , pwd: $PWD"
 	    if [ -z "$URI" ] ; then
 	        echo "[ERROR] uri of store $i not given"
-	        exit 1
+	        exit 1	        
 	    fi  
 
-	    echo "[INFO] waiting for store to come online"
-	    test_connection "${CONNECTION_ATTEMPTS}" "${URI}"
+	    echo "[INFO] waiting for store $i to come online"
+	    test_connection "${CONNECTION_ATTEMPTS}" "${HOST}" "${PORT}"
 	    if [ $? -eq 2 ]; then
-	        echo "[ERROR] store $STORE_ADDR_TEST not reachable. Skip this benchmark and continue with next store..."
-	        let "i=$i+1"
-    		stores="STORE_${i}"
-	        continue
+	        echo "[ERROR] store ${HOST}:${PORT} not reachable"
+	        exit 1	        
 	    else
-	        echo "[INFO] store connection OK"
+	        echo "[INFO] store $i connection OK"
 	    fi  
 
 	    # generate database section
