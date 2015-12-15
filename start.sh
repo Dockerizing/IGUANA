@@ -211,10 +211,10 @@ get_stores() {
 
 	    echo "[INFO] got store $i (${URI})"
 	    # echo "type: $TYPE , uri: $URI , user: $USER , pwd: $PWD"
-	    if [ -z "$URI" ] ; then
-	        echo "[ERROR] uri of store $i not given"
-	        exit 1	        
-	    fi  
+	    if [[ -z "$URI" || -z "$HOST" ]] ; then
+            echo "[ERROR] empty host or uri of store $i. If your are using Docker Compose check the links and environment ids."
+            exit 1
+        fi  
 
 	    echo "[INFO] waiting for store $i to come online"
 	    test_connection "${CONNECTION_ATTEMPTS}" "${HOST}" "${PORT}"
@@ -230,7 +230,7 @@ get_stores() {
 	    if [ "$TYPE" = "elds" ]; then
 			echo "Type is eLDS! We wait another 10 seconds..."
 			sleep 10
-	    fi
+		fi
 
 	    # generate database section
 	    xml_db="<database id=\"store_${TYPE}_${i}\" type=\"impl\">
