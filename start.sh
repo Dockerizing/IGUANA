@@ -114,6 +114,7 @@ test_connection () {
     fi
     
     nc -w 1 "$host" $port < /dev/null;
+    # curl --output /dev/null --silent --head --fail "$host"
     while [[ $? -ne 0 ]] ;
     do
         echo -n "..."
@@ -223,6 +224,13 @@ get_stores() {
 	    else
 	        echo "[INFO] store $i connection OK"
 	    fi  
+
+	    # bugfix to wait for elds, because nc... listens to tomcat... ;(
+	    # TODO: replace this with curl
+	    if [ "$TYPE" = "elds" ]; then
+			echo "Type is eLDS! We wait another 10 seconds..."
+			sleep 10
+	    fi
 
 	    # generate database section
 	    xml_db="<database id=\"store_${TYPE}_${i}\" type=\"impl\">
