@@ -135,8 +135,8 @@ test_connection () {
 uri_store_matching() {
     uri=$1
     # may get uri from %store_id%
-    if [[ "$uri" =~ %[A-Za-z]+% ]] ; then
-        match=$BASH_REMATCH # = %store_id%
+    if [[ "$uri" =~ %%.*%% ]] ; then
+        match=$BASH_REMATCH # = %%store_id%%
         appendix=${uri//*$match/}
         prefix=${uri//$match*/}
         store_id=${match//\%/}
