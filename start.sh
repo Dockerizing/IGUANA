@@ -76,7 +76,7 @@ main() {
 	# copy results_* to ./results (iguana saves results in results_0, results_1, ... etc, if there ara more than one <suite> in config.xml!)
 	cp -r ./results_* ./results/
 
-	echo "[INFO] Done. The benchmark results are saved to ./[data/]results/"
+	echo "[INFO] Done. The benchmark results were saved to ./[data/]results/"
 
 } # end of main
 
@@ -228,8 +228,8 @@ get_stores() {
 	    # bugfix to wait for elds, because nc... listens to tomcat... ;(
 	    # TODO: replace this with curl
 	    if [ "$TYPE" = "elds" ]; then
-			echo "Type is eLDS! We wait another 10 seconds..."
-			sleep 10
+			echo "[INFO] Type is eLDS! We wait another 15 seconds..."
+			sleep 15
 		fi
 
 	    # generate database section
