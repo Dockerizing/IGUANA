@@ -28,6 +28,8 @@
 		<random-function type="RandomTriple" generate="false">
 			<percent value="1.0" file-name="dbpedia2/" />
 		</random-function>
+
+		<save-results-as-diagram value="true"/>
 		
 		<warmup time="0" file-name="warmup.txt" />
 	
