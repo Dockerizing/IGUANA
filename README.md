@@ -24,7 +24,9 @@ You can add your own stores to test as `-e`-parameter or in a configuration file
 
 ### Parameter
 
-Stores can added as Docker environment variables from your command line with parameter `-e`. Each store must be a new `-e` and prefixed as STORE_X, while X is an incremented number, starting with 1. Example:
+Parameter are provided by using key-value-pairs. The schema is `key=>value`. Stores can added as Docker environment variables from your command line with parameter `-e`. Each store must be a new `-e` and prefixed as STORE_X, while X is an incremented number, starting with 1. 
+
+**Example:**
 
 ```
 docker run -e "STORE_1=uri=>http://dbpedia.org/sparql" \
@@ -36,7 +38,7 @@ Beside the uri you can give a user and password. Example:
 
 `docker run -e "STORE_1=uri=>http://localhost:8890/sparql user=>dba pwd=>dba" aksw/dld-present-iguana`
 
-### Configurationfile
+### Configuration file
 
 To use your own configuration or query file, please adopt the example files [config.xml](https://github.com/Dockerizing/IGUANA/blob/master/config.xml) and [queries.txt](https://github.com/Dockerizing/IGUANA/blob/master/queries.txt) and create a local copy.
 
