@@ -76,6 +76,9 @@ main() {
 	# copy results_* to ./results (iguana saves results in results_0, results_1, ... etc, if there ara more than one <suite> in config.xml!)
 	cp -r ./results_* ./results/
 
+	# give user rights to the results
+	chmod -R 777 ./results/
+
 	echo "[INFO] Done. The benchmark results were saved to ./[data/]results/"
 
 } # end of main
