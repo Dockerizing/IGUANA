@@ -1,4 +1,4 @@
-FROM ubuntu:14.04
+FROM ubuntu:16.04
 
 #
 # IGUANA Benchmark in a Docker container
@@ -11,6 +11,7 @@ FROM ubuntu:14.04
 #        /start.sh      To start the benchmark (autostart)
 #
 
+MAINTAINER Simeon Ackermann <amseon@web.de>
 MAINTAINER Konrad Abicht <abicht@informatik.uni-leipzig.de>
 
 # Let the conatiner know that there is no tty
@@ -20,7 +21,7 @@ ENV DEBIAN_FRONTEND noninteractive
 RUN apt-get clean && apt-get update
 
 # install some java
-RUN apt-get install -y openjdk-7-jre
+RUN apt-get install -y netcat openjdk-8-jre
 
 # create /iguana
 RUN mkdir /iguana
