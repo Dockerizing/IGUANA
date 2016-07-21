@@ -80,6 +80,8 @@ main() {
 	chmod -R 777 ./results/
 
 	echo "[INFO] Done. The benchmark results were saved to ./[data/]results/"
+	touch log.txt
+	tail -f log.txt
 
 } # end of main
 
@@ -116,7 +118,7 @@ test_connection () {
         port=80
     fi
     
-    nc -w 1 "$host" $port < /dev/null;
+    nc -w 1 "$host" $port > /dev/null;
     # curl --output /dev/null --silent --head --fail "$host"
     while [[ $? -ne 0 ]] ;
     do
@@ -129,7 +131,7 @@ test_connection () {
             echo "...timeout"
             return 2
         fi
-        nc -w 1 "$host" $port < /dev/null;
+        nc -w 1 "$host" $port > /dev/null;
     done
     echo ""
 }
